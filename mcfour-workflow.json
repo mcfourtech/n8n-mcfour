@@ -1,0 +1,87 @@
+{
+  "name": "MCFOUR Generate Prompt",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prompt",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "jsonParameters": true,
+        "options": {},
+        "headers": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "bodyParametersJson": "{\n  \"model\": \"deepseek/deepseek-r1-0528-qwen3-8b:free\",\n  \"messages\": [\n    { \"role\": \"system\", \"content\": \"Kamu adalah AI yang membuat aplikasi, game, atau website dari prompt.\" },\n    { \"role\": \"user\", \"content\": \"{{ $json[\"prompt\"] }}\" }\n  ]\n}"
+      },
+      "name": "OpenRouter Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        600,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        900,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "OpenRouter Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Request": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}
